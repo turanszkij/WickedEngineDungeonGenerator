@@ -64,11 +64,7 @@ playerController = {
 		local o2,p2,n2 = Pick(ray2)
 		local dist = vector.Subtract(self.skeleton.GetPosition():Add(Vector(0,4)),p2):Length()
 		if(o2:IsValid() and o2:GetName() ~= self.meshname and dist < 2.8) then
-			-- stop at wall contact
-			--self.state = self.states.STAND
-			--self.velocity = velocityPrev
-			
-			-- run along wall
+			-- run along wall instead of going through it
 			local undesiredMotion = n2:Multiply(vector.Dot(self.velocity.Normalize(), n2.Normalize()))
 			local desiredMotion = vector.Subtract(self.velocity, undesiredMotion)
 			self.velocity = desiredMotion

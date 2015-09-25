@@ -8,8 +8,8 @@ local sleep = waitSeconds
 dofile("player.lua")
 dofile("tpCamera.lua")
 
-local envMapFileName = "instanceBenchmark2/env.dds"
-local colorGradingFileName = "instanceBenchmark2/colorGrading.dds"
+local envMapFileName = "dungeon/env.dds"
+local colorGradingFileName = "dungeon/colorGrading.dds"
 
 HairParticleSettings(20,50,200)
 SetDirectionalLightShadowProps(1024,2)
@@ -52,10 +52,8 @@ local function ResetGame()
 	camera:Reset()
 	camera:Follow(player)
 	
-	-- LoadModel("instanceBenchmark2/","instanceBenchmark2","level")
 	dofile("dungeon.lua")
 	dungeon.Generate(10,80,40)  -- defined in dungeon.lua!
-	--LoadWorldInfo("instanceBenchmark2/","instanceBenchmark2.wiw")
 	FinishLoading()
 	
 	SetEnvironmentMap(gamecomponent.GetContent().Get(envMapFileName))

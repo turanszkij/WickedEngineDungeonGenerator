@@ -1,10 +1,5 @@
 -- Simplistic random dungeon generator lua script
 
-function math.round(x)
-	return x + 0.5 - ( x + 0.5 ) % 1;
-	--return math.floor(x + 0.5)
-end
-
 dungeon={
 	
 	Generate = function(complexity, gridSizeX, gridSizeZ)
@@ -47,30 +42,23 @@ dungeon={
 		-- returns:
 		--		bool isValid	: Can place physical segment
 		local function MarkCellsAsOccupied(pos, area, symbol)
-			-- local areaX = math.floor( area.GetX() )
-			-- local areaZ = math.floor( area.GetZ() )
-			-- 
-			-- -- handle rotated area (can be negative bounds)
-			-- local stepZ = 1
-			-- if areaZ < 0 then
-			-- 	stepZ = -1
-			-- end
-			-- local stepX = 1
-			-- if areaX < 0 then
-			-- 	stepX = -1
-			-- end
-			
 			local area_nX = area.GetX()
 			local area_pX = area.GetY()
 			local area_nZ = area.GetZ()
 			local area_pZ = area.GetW()
-			local stepZ = 2
-			local stepX = 2
+			local stepZ = 1
+			local stepX = 1
 			if area_nZ > area_pZ then
-				stepZ = -2
+				stepZ = -1
+				area_nZ = area_nZ - 1
+			else
+				area_pZ = area_pZ - 1
 			end
 			if area_nX > area_pX then
-				stepX = -2
+				stepX = -1
+				area_nX = area_nX - 1
+			else
+				area_pX = area_pX - 1
 			end
 			
 			-- check if the piece is inside the grid and cancel if it is not
@@ -96,10 +84,15 @@ dungeon={
 			
 			return true
 		end
+		
+		
+		--MarkCellsAsOccupied(Vector(0,0,0),Vector(0,3,0,2),'A')
+		
 		LoadModel("dungeon/start/","start","segment0",scalingMat)
 		LoadWorldInfo("dungeon/start/","start.wiw")
 		MarkCellsAsOccupied(dungeonStartPos, Vector(-1,1,0,-2), 'S')
 		
+		-- Create physical dungeon segments
 		local function GenerateDungeon(i, count, pos, rotY)
 			local rotMat = matrix.RotationY(rotY)
 			local transformMat = matrix.Multiply( rotMat, matrix.Multiply( matrix.Translation(pos), scalingMat ) )
