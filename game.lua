@@ -1,12 +1,11 @@
 -- Lua Wicked Engine Game script
 
+
+-- basic engine setup
 local print = backlog_post
 backlog_fontsize(-5)
 backlog_fontrowspacing(-2)
 local sleep = waitSeconds
-
-dofile("player.lua")
-dofile("tpCamera.lua")
 
 local envMapFileName = "dungeon/env.dds"
 local colorGradingFileName = "dungeon/colorGrading.dds"
@@ -38,9 +37,12 @@ main.SetWatermarkDisplay(true)
 main.SetFPSDisplay(true)
 main.SetCPUDisplay(true)
 
+
+-- include character and camera controllers
+dofile("player.lua")
+dofile("tpCamera.lua")
 -- Player Controller (player.lua)
 local player = playerController
-
 -- Third Person camera (tpCamera.lua)
 local camera = tpCamera
 
@@ -53,13 +55,14 @@ local function ResetGame()
 	camera:Follow(player)
 	
 	dofile("dungeon.lua")
-	dungeon.Generate(100)
+	dungeon.Generate(50)
 	FinishLoading()
 	
 	SetEnvironmentMap(gamecomponent.GetContent().Get(envMapFileName))
 	SetColorGrading(gamecomponent.GetContent().Get(colorGradingFileName))
 end
 
+-- Very simple game logic
 local GameLogic = function()
 	
 	ResetGame()
@@ -90,7 +93,7 @@ local GameLogic = function()
 		player:Update()
 		
 		
-		
+		-- Wait for the engine to update the game
 		update()
 	end
 end
@@ -120,6 +123,8 @@ runProcess(function()
 			sleep(1)
 		end
 		
+		-- Drawing additional render data (slow, only for debug purposes)
+		
 		--velocity
 		DrawLine(player.skeleton.GetPosition():Add(Vector(0,4)),player.skeleton.GetPosition():Add(Vector(0,4)):Add(player.velocity))
 		--face
@@ -127,6 +132,7 @@ runProcess(function()
 		--intersection
 		DrawAxis(player.p,0.5)
 		
+		-- Wait for the engine to render the scene
 		render()
 	end
 end)

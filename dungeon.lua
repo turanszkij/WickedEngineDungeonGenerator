@@ -3,9 +3,9 @@
 dungeon={
 	
 	Generate = function(complexity)
-		backlog_fontsize(-5)
-		backlog_fontrowspacing(-5)
-		backlog_clear()
+		-- backlog_fontsize(-5)
+		-- backlog_fontrowspacing(-5)
+		-- backlog_clear()
 	
 		local scalingMat = matrix.Scale(Vector(10,10,10))
 		local dungeonStartPos = Vector(0,0,0)
@@ -17,28 +17,20 @@ dungeon={
 		--		This function manages physical space so that no intersecting segments are placed
 		-- params:
 		--		Vector pos		: enter position (pivot)
-		--		Vector area		: rectangular area description (left x position, width, near z position, length)
+		--		Vector area		: rectangular area description (left x position, right x, near z position, far z position)
 		-- returns:
 		--		bool isValid	: Can place physical segment
 		local function MarkCellsAsOccupied(pos, area)
-			local area_nX = area.GetX()
-			local area_pX = area.GetY()
-			local area_nZ = area.GetZ()
-			local area_pZ = area.GetW()
-			local stepZ = 1
-			local stepX = 1
-			if area_nZ > area_pZ then
-				stepZ = -1
-			end
-			if area_nX > area_pX then
-				stepX = -1
-			end
+			local area_nX = math.min(area.GetX(),area.GetY())
+			local area_pX = math.max(area.GetX(),area.GetY())
+			local area_nZ = math.min(area.GetZ(),area.GetW())
+			local area_pZ = math.max(area.GetZ(),area.GetW())
 			
-			-- check if the piece is inside the grid and cancel if it is not
-			-- also check for any overlaps and cancel if an overlap occurs
-			for z=area_nZ,area_pZ,stepZ do
+			-- check if the piece is available (its coordinates are not already in the occupied array)
+			-- if it is not, then exit early
+			for z=area_nZ,area_pZ do
 				if z ~= 0 then
-					for x=area_nX,area_pX,stepX do
+					for x=area_nX,area_pX do
 						if x~=0 then
 							local store_pos = pos:Add(Vector(x,0,z))
 							for k, v in pairs(occupied) do
@@ -51,10 +43,10 @@ dungeon={
 				end
 			end
 			
-			-- if the cells are available, mark them as occupied 
-			for z=area_nZ,area_pZ,stepZ do
+			-- if the control is here, the piece can be placed, but we need to mark the area cells (add them to the occupied array)
+			for z=area_nZ,area_pZ do
 				if z ~= 0 then
-					for x=area_nX,area_pX,stepX do
+					for x=area_nX,area_pX do
 						if x ~= 0 then
 							local store_pos = pos:Add(Vector(x,0,z))
 							table.insert(occupied,{math.floor(store_pos.GetX()),math.floor(store_pos.GetZ())})
@@ -142,6 +134,7 @@ dungeon={
 			end
 		end
 		
+		-- Call recursive generator function
 		GenerateDungeon(0,complexity,dungeonStartPos,0)
 		
 		

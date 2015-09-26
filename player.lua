@@ -1,6 +1,6 @@
 -- Lua Thrid person camera and character controller script
 
-
+-- Very simple additive gravity for now
 local gravity = Vector(0,-0.076,0)
 
 playerController = {
