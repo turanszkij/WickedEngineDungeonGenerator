@@ -45,6 +45,7 @@ dofile("tpCamera.lua")
 local player = playerController
 -- Third Person camera (tpCamera.lua)
 local camera = tpCamera
+dungeon_complexity = 10
 
 local function ResetGame()
 	ClearWorld()
@@ -55,7 +56,7 @@ local function ResetGame()
 	camera:Follow(player)
 	
 	dofile("dungeon.lua")
-	dungeon.Generate(50)
+	dungeon.Generate(dungeon_complexity)
 	FinishLoading()
 	
 	SetEnvironmentMap(gamecomponent.GetContent().Get(envMapFileName))
