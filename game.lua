@@ -14,6 +14,7 @@ HairParticleSettings(20,50,200)
 SetDirectionalLightShadowProps(1024,2)
 SetPointLightShadowProps(3,512)
 SetSpotLightShadowProps(3,512)
+SetDebugBoxesEnabled(false)
 
 local gamecomponent = DeferredRenderableComponent()
 gamecomponent.Initialize()
@@ -45,7 +46,7 @@ dofile("tpCamera.lua")
 local player = playerController
 -- Third Person camera (tpCamera.lua)
 local camera = tpCamera
-dungeon_complexity = 10
+dungeon_complexity = 30
 
 local function ResetGame()
 	ClearWorld()
