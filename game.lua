@@ -53,7 +53,7 @@ local function ResetGame()
 	camera:Follow(player)
 	
 	dofile("dungeon.lua")
-	dungeon.Generate(10,80,40)  -- defined in dungeon.lua!
+	dungeon.Generate(100)
 	FinishLoading()
 	
 	SetEnvironmentMap(gamecomponent.GetContent().Get(envMapFileName))
