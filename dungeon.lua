@@ -48,8 +48,8 @@ dungeon={
 			
 			
 			local select = math.random(0, 100)
-			if(select < 75) then -- common pieces
-				local select2 = math.random(0, 4)
+			if(select < 80) then -- common pieces
+				local select2 = math.random(0, 6)
 				if(select2 < 1) then --left turn
 					if CheckSegmentCanBePlaced(AABB(Vector(-1,0,0),Vector(1,2,2)).Transform(transformMat)) then
 						LoadModel("dungeon/turnleft/","turnleft",tag,transformMat)
@@ -61,6 +61,28 @@ dungeon={
 					if CheckSegmentCanBePlaced(AABB(Vector(-1,0,0),Vector(1,2,2)).Transform(transformMat)) then
 						LoadModel("dungeon/turnright/","turnright",tag,transformMat)
 						GenerateDungeon(i+1,count,pos:Add(Vector(1,0,1).Transform(rotMat)),rotY+0.5*math.pi)
+					else
+						GenerateDungeon(i+1,count,pos,rotY)
+					end
+				elseif(select2 < 3) then --t-junction
+					if CheckSegmentCanBePlaced(AABB(Vector(-1,0,0),Vector(1,2,2)).Transform(transformMat)) then
+						LoadModel("dungeon/tjunction/","tjunction",tag,transformMat)
+						-- right
+						GenerateDungeon(i+1,count,pos:Add(Vector(1,0,1).Transform(rotMat)),rotY+0.5*math.pi)
+						-- left
+						GenerateDungeon(i+1,count,pos:Add(Vector(-1,0,1).Transform(rotMat)),rotY-0.5*math.pi)
+					else
+						GenerateDungeon(i+1,count,pos,rotY)
+					end
+				elseif(select2 < 4) then --cross-junction
+					if CheckSegmentCanBePlaced(AABB(Vector(-1,0,0),Vector(1,2,2)).Transform(transformMat)) then
+						LoadModel("dungeon/crossjunction/","crossjunction",tag,transformMat)
+						-- right
+						GenerateDungeon(i+1,count,pos:Add(Vector(1,0,1).Transform(rotMat)),rotY+0.5*math.pi)
+						-- left
+						GenerateDungeon(i+1,count,pos:Add(Vector(-1,0,1).Transform(rotMat)),rotY-0.5*math.pi)
+						-- straight
+						GenerateDungeon(i+1,count,pos:Add(Vector(0,0,2).Transform(rotMat)),rotY)
 					else
 						GenerateDungeon(i+1,count,pos,rotY)
 					end
