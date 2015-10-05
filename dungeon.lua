@@ -9,15 +9,24 @@ dungeon={
 		
 		-- This will hold the bounding boxes of the placed segments
 		local boxes = {}
+		-- This holds unconnected exits
+		local exits = {}
+		-- If an exit should be placed, look up its transform here
+		local exitTransforms = {}
 		
 		-- threshold so that aabbs snapped to each other are not detected as intersecting
 		-- because segments are needed to be snapped to each other
 		-- chose this value so that it also eliminates floating point errors
 		local aabb_threshold = Vector(0.05,0.05,0.05)
 		
+		-- Shrink an AABB by a threshold vector
+		local function ShrinkAABBThreshold(aabb, threshold)
+			return AABB(aabb.GetMin():Add(threshold), aabb.GetMax():Subtract(threshold))
+		end
+		
 		-- Check if a segment can be placed or not by specifying its axis aligned bounding box
 		local function CheckSegmentCanBePlaced(aabb)
-			aabb = AABB(aabb.GetMin():Add(aabb_threshold), aabb.GetMax():Subtract(aabb_threshold))
+			aabb = ShrinkAABBThreshold(aabb, aabb_threshold)
 			
 			for i,box in ipairs(boxes) do
 				if box.Intersects(aabb) then
@@ -28,6 +37,23 @@ dungeon={
 			table.insert(boxes,aabb)
 			
 			return true
+		end
+		
+		-- Merge rooms if their exits are intersecting, but close them if not
+		local function MergeExits()
+			for i = 1, #exits do
+				local place = true
+				for j = 1, #exits do
+					if i~=j and exits[i].Intersects(exits[j]) then
+						place = false
+						break
+					end
+				end
+				
+				if place then
+					LoadModel("dungeon/end/","end",tag,exitTransforms[i])
+				end
+			end
 		end
 		
 		-- Place the start piece of the dungeon
@@ -41,11 +67,13 @@ dungeon={
 			local tag = "segment"..math.floor(pos.GetX())..math.floor(pos.GetY())..math.floor(pos.GetZ())
 			local rotMat = matrix.RotationY(rotY)
 			local transformMat = matrix.Multiply( rotMat, matrix.Multiply( matrix.Translation(pos), scalingMat ) )
+			
+			-- Mark exit point if the generation ended and return from recursion
 			if (i >= count) then
-				LoadModel("dungeon/end/","end",tag,transformMat)
+				table.insert(exits, ShrinkAABBThreshold( AABB(Vector(-0.5,0,0),Vector(0.5,1,0.5)).Transform(transformMat), aabb_threshold) )
+				table.insert(exitTransforms, transformMat)
 				return;
 			end
-			
 			
 			local select = math.random(0, 100)
 			if(select < 80) then -- common pieces
@@ -142,6 +170,7 @@ dungeon={
 		
 		-- Call recursive generator function
 		GenerateDungeon(0,complexity,dungeonStartPos,0)
+		MergeExits()
 		
 	
 	end,
